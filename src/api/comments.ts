@@ -1,0 +1,10 @@
+import { CommentType } from '../types/CommentType';
+import { client } from '../utils/fetchApi';
+
+export const getAllComments = () => {
+  return client.get<CommentType[]>('/messages');
+};
+
+export const addComment = (message: Omit<CommentType, 'id' | 'createdAt'>) => {
+  return client.post<CommentType>('/messages', message);
+};

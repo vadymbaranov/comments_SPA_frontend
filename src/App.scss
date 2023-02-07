@@ -1,3 +1,5 @@
-.starter {
-  font-size: 18px;
-}
+@import './styles/Main.scss';
+@import './styles/CommentsList.scss';
+@import './styles/NewCommentForm.scss';
+@import './styles/Pagination.scss';
+@import './styles/ReplyComment.scss';

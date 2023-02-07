@@ -1,0 +1,46 @@
+// eslint-disable-next-line max-len
+// const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server';
+const TEST_URL = 'http://localhost:9000/.netlify/functions/server';
+
+// export function getComments<T>(url: string): Promise<T> {
+//   return fetch(TEST_URL + url)
+//     .then(response => {
+//       if (!response.ok) {
+//         throw new Error();
+//       }
+
+//       return response.json();
+//     });
+// }
+type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
+
+function request<T>(
+  url: string,
+  method: RequestMethod = 'GET',
+  data: any = null,
+): Promise<T> {
+  const options: RequestInit = { method };
+
+  if (data) {
+    options.body = new URLSearchParams(data).toString();
+    options.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+  }
+
+  return fetch(TEST_URL + url, options)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      return response.json();
+    });
+}
+
+export const client = {
+  get: <T>(url: string) => request<T>(url),
+  post: <T>(url: string, data: any) => request<T>(url, 'POST', data),
+  // patch: <T>(url: string, data: any) => request<T>(url, 'PATCH', data),
+  // delete: (url: string) => request(url, 'DELETE'),
+};
