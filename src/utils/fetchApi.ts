@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-len
-const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server';
+const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server/messages';
 // const TEST_URL = 'http://localhost:9000/.netlify/functions/server/messages';
 
 // export function getComments<T>(url: string): Promise<T> {

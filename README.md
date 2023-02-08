@@ -1,6 +1,5 @@
 # Comments(chat) - SPA
 
-Write here about your project in two-three sentences.
 - [DEMO LINK](https://vadymbaranov.github.io/comments_SPA_frontend)
 
 ## Description
