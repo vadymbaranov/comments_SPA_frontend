@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import classNames from 'classnames';
 import { getAllComments, getComments } from '../../api/comments';
 import { CommentType } from '../../types/CommentType';
@@ -13,6 +13,7 @@ export const CommentsList: React.FC = () => {
   const [numberOfComments, setNumberOfComments] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [allComments, setAllComments] = useState<CommentType[]>([]);
   // const [error, setError] = useState<ErrorNotification>(ErrorNotification.None);
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [replyTo, setReplyTo] = useState<string>('');
@@ -23,19 +24,20 @@ export const CommentsList: React.FC = () => {
 
   const getCommentsFromServer = useCallback(async () => {
     try {
-      const allComments = await getAllComments();
+      const allCommentsFromServer = await getAllComments();
       const commentsFromServer = await getComments(currentPage, perPage);
 
       setComments(commentsFromServer);
-      setNumberOfComments(await allComments.length);
+      setNumberOfComments(allCommentsFromServer.length);
+      setAllComments(allCommentsFromServer);
     } catch {
       throw new Error(ErrorNotification.NoComments);
     }
-  }, [perPage, currentPage]);
+  }, [currentPage]);
 
   useEffect(() => {
     getCommentsFromServer();
-  }, [perPage, currentPage]);
+  }, [currentPage]);
 
   const mainComments = comments.filter((item) => (
     !Object.prototype.hasOwnProperty.call(item, 'responseTo')
@@ -65,7 +67,7 @@ export const CommentsList: React.FC = () => {
               <td>
                 <Comment
                   comment={comment}
-                  comments={comments}
+                  comments={allComments}
                   onReply={setReplyTo}
                   onComment={setIsCommenting}
                 />

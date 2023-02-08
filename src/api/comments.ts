@@ -10,5 +10,5 @@ export const getAllComments = () => {
 };
 
 export const addComment = (message: Omit<CommentType, 'id' | 'createdAt'>) => {
-  return client.post<CommentType>('/messages', message);
+  return client.post<CommentType>('/', message);
 };
