@@ -1,6 +1,7 @@
 .input-comment {
   height: 200px;
   resize: none;
+  margin-bottom: 12px;
 }
 
 .form {
@@ -13,15 +14,19 @@
   }
 }
 
+.file {
+  margin-bottom: 12px;
+}
+
 .button {
   &__close {
     box-sizing: border-box;
     height: 28px;
     width: 28px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   &__send {
-    margin-top: 24px;
+    margin-top: 12px;
   }
 }

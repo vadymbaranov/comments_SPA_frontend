@@ -6,15 +6,17 @@ import { getNumbers } from '../../utils/getNumber';
 type Props = {
   numberOfComments: number;
   currentPage: number;
+  perPage: number;
   onPageChange: (currentPage: number) => void;
 };
 
 export const Pagination: React.FC<Props> = ({
   numberOfComments,
   currentPage,
+  perPage,
   onPageChange,
 }) => {
-  const amountOfPages = Math.ceil(numberOfComments / 25);
+  const amountOfPages = Math.ceil(numberOfComments / perPage);
   const pages = getNumbers(1, amountOfPages);
   const isFirstPage = useMemo(() => currentPage === 1, [currentPage]);
   const isLastPage = useMemo(

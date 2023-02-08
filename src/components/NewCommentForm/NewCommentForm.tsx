@@ -1,115 +1,104 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-console */
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, ChangeEvent } from 'react';
 import Reaptcha from 'reaptcha';
-// import ReCAPTCHA from 'react-google-recaptcha';
-// import axios from 'axios';
 import { addComment } from '../../api/comments';
 import { ErrorNotification } from '../../types/ErrorNotification';
 
+function hasProperText(str: string) {
+  const patternForTagsAndText = /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)$/;
+
+  return patternForTagsAndText.test(str);
+}
+
 type Props = {
   onLoad: () => Promise<void>;
-  onError: (error: ErrorNotification) => void;
   onComment: (isCommenting: boolean) => void;
   replyTo: string;
 };
 
 export const NewCommentForm: React.FC<Props> = ({
   onLoad,
-  onError,
   onComment,
   replyTo,
 }) => {
   const [commentText, setCommentText] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [homePage, setHomePage] = useState<string>('');
+  const [homepage, setHomepage] = useState<string>('');
   const [verified, setVerified] = useState<boolean>(false);
   const [captchaToken, setCaptchaToken] = useState('');
+  const [properTextWithTags, setProperTextWithTags] = useState<boolean>(false);
+  const [imageFile, setImageFile] = useState<File>();
+  const [textFile, setTextFile] = useState<File>();
+  // const [fileInput] = useState(React.createRef());
 
   const captchaRef = useRef<Reaptcha>(null);
 
   const siteKey: string = process.env.REACT_APP_SITE_KEY || '';
-  // const apiURL: string = process.env.REACT_APP_API_URL || '';
 
   const resetForm = () => {
     setUsername('');
     setEmail('');
-    setHomePage('');
+    setHomepage('');
     setCommentText('');
   };
 
-  const onVerify = () => {
+  const verify = () => {
     captchaRef.current?.getResponse().then(res => {
-      console.log(res, captchaToken);
       setCaptchaToken(res);
     });
+
+    if (!captchaToken) {
+      setVerified(false);
+    }
+
     setVerified(true);
+  };
+
+  // useEffect(() => {
+  //   return () => verify();
+  // });
+
+  const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setImageFile(event.target.files[0]);
+    }
+  };
+
+  const handleTextFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setTextFile(event.target.files[0]);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // const token = captchaRef.current?.getValue();
-
-    // captchaRef.current?.reset();
+    if (hasProperText(commentText)) {
+      setProperTextWithTags(true);
+    }
 
     try {
       await addComment({
         username: username.trim(),
         email: email.trim(),
-        homepage: homePage.trim(),
+        homepage: homepage.trim(),
         messageText: commentText.trim(),
         responseTo: replyTo,
       });
 
       await onLoad();
-
-      // await axios
-      //   .post(apiURL, { token })
-      //   .then((res) => {
-      //     if (res.data === 'Human') {
-      //       setVerified(true);
-      //     }
-
-      //     setVerified(false);
-      //     console.log(res);
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
     } catch {
-      onError(ErrorNotification.Add);
+      throw new Error(ErrorNotification.Add);
     } finally {
       resetForm();
       onComment(false);
     }
 
-    console.log(verified);
     setVerified(false);
+    // setFileInput([]);
   };
-
-  // const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const comment = {
-  //     username,
-  //     email,
-  //     homePage,
-  //     commentText,
-  //   };
-  //   // const token = captchaRef.current?.getValue();
-
-  //   // captchaRef.current?.reset();
-
-  //   await axios
-  //     .post(apiURL, { captchaToken })
-  //     .then((res) => console.log(res))
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-
-  //   resetForm();
-  // };
 
   return (
     <div className="comment comment__container" title="commentForm">
@@ -143,12 +132,8 @@ export const NewCommentForm: React.FC<Props> = ({
                 <span className="icon is-small is-left">
                   <i className="fas fa-user"></i>
                 </span>
-                <span className="icon is-small is-right">
-                  <i className="fas fa-check"></i>
-                </span>
               </div>
             </label>
-            <p className="help is-success">This username is available</p>
           </div>
 
           <div className="field">
@@ -168,12 +153,8 @@ export const NewCommentForm: React.FC<Props> = ({
                 <span className="icon is-small is-left">
                   <i className="fas fa-envelope"></i>
                 </span>
-                <span className="icon is-small is-right">
-                  <i className="fas fa-exclamation-triangle"></i>
-                </span>
               </div>
             </label>
-            <p className="help is-danger">This email is invalid</p>
           </div>
 
           <div className="field">
@@ -185,19 +166,15 @@ export const NewCommentForm: React.FC<Props> = ({
                   type="url"
                   className="input input-homepage"
                   placeholder="https://example.com"
-                  value={homePage}
+                  value={homepage}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => (
-                    setHomePage(event.target.value))}
+                    setHomepage(event.target.value))}
                 />
                 <span className="icon is-small is-left">
-                  <i className="fas fa-envelope"></i>
-                </span>
-                <span className="icon is-small is-right">
-                  <i className="fas fa-exclamation-triangle"></i>
+                  <i className="fas fa-solid fa-globe"></i>
                 </span>
               </div>
             </label>
-            <p className="help is-danger">This email is invalid</p>
           </div>
 
           <div className="field">
@@ -215,9 +192,59 @@ export const NewCommentForm: React.FC<Props> = ({
                 </textarea>
               </div>
             </label>
+            {properTextWithTags && (
+              <p className="help is-danger">This text is not valid. Check it for valid HTML code!</p>
+            )}
           </div>
+
+          <div className="file is-info has-name">
+            <label htmlFor="file-image" className="file-label">
+              <input
+                className="file-input"
+                type="file"
+                name="file"
+                accept=".png, .gif, .jpg, .jpeg"
+                onChange={handleImageFileChange}
+              />
+              <span className="file-cta">
+                <span className="file-icon">
+                  <i className="fas fa-cloud-upload-alt"></i>
+                </span>
+                <span className="file-label">
+                  Attach image here
+                </span>
+              </span>
+              <span className="file-name">
+                {imageFile}
+              </span>
+            </label>
+          </div>
+
+          <div className="file is-warning has-name">
+            <label htmlFor="file-text" className="file-label">
+              <input
+                className="file-input"
+                type="file"
+                name="file"
+                accept=".txt"
+                onChange={handleTextFileChange}
+              />
+              <span className="file-cta">
+                <span className="file-icon">
+                  <i className="fas fa-cloud-upload-alt"></i>
+                </span>
+                <span className="file-label">
+                  Attach text here
+                </span>
+              </span>
+              <span className="file-name">
+                {textFile}
+              </span>
+            </label>
+          </div>
+
           <div className="button__container">
-            <Reaptcha sitekey={siteKey} onVerify={onVerify} />
+            <Reaptcha sitekey={siteKey} onVerify={verify} />
 
             <button
               type="submit"

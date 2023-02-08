@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-len
 // const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server';
-const TEST_URL = 'http://localhost:9000/.netlify/functions/server';
+const TEST_URL = 'http://localhost:9000/.netlify/functions/server/messages';
 
 // export function getComments<T>(url: string): Promise<T> {
 //   return fetch(TEST_URL + url)
@@ -34,7 +34,11 @@ function request<T>(
         throw new Error();
       }
 
-      return response.json();
+      const dataReceived = response.json();
+
+      const comments = dataReceived.then((res) => res.results);
+
+      return comments;
     });
 }
 
