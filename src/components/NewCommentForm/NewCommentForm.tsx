@@ -40,7 +40,7 @@ export const NewCommentForm: React.FC<Props> = ({
 
   const captchaRef = useRef<Reaptcha>(null);
 
-  const siteKey: string = process.env.REACT_APP_SITE_KEY || '';
+  const siteKey = '6Lf9IEAkAAAAAHEUJ1qBQQp2G8FZerPoBP3iuLcm';
 
   const resetForm = () => {
     setUsername('');
