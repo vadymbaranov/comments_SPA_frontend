@@ -1,6 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-console */
-import React, { useState, useRef, ChangeEvent } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+} from 'react';
 import Reaptcha from 'reaptcha';
 import { addComment } from '../../api/comments';
 import { ErrorNotification } from '../../types/ErrorNotification';
@@ -56,9 +61,9 @@ export const NewCommentForm: React.FC<Props> = ({
     setVerified(true);
   };
 
-  // useEffect(() => {
-  //   return () => verify();
-  // });
+  useEffect(() => {
+    return () => verify();
+  });
 
   const handleImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {

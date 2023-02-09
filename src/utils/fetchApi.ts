@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-len
-const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server/messages';
-// const TEST_URL = 'http://localhost:9000/.netlify/functions/server/messages';
+const BASE_URL = 'https://comments-spa.netlify.app/.netlify/functions/server';
+// const TEST_URL = 'http://localhost:9000/.netlify/functions/server';
 
 // export function getComments<T>(url: string): Promise<T> {
 //   return fetch(TEST_URL + url)
@@ -25,6 +25,7 @@ function request<T>(
     options.body = new URLSearchParams(data).toString();
     options.headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
+      'Access-Control-Allow-Origin': '*',
     };
   }
 
